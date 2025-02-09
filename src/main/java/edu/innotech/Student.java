@@ -1,33 +1,43 @@
 package edu.innotech;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
+import lombok.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
-@ToString @EqualsAndHashCode
+@ToString
+@EqualsAndHashCode
 public class Student {
-    @Getter@Setter
+    @Setter
+    private StudentRepo repo;
+
+    @Getter    @Setter
     private String name;
-    private List <Integer> grades= new ArrayList<>();
+    private List grades = new ArrayList<>();
 
     public Student(String name) {
         this.name = name;
     }
 
-    public List<Integer> getGrades() {
-       // return grades;
-        return Collections.unmodifiableList(grades);
+    public List getGrades() {
+        return new ArrayList<>(grades);
     }
 
+    public void setRepo(StudentRepo repo) {
+        this.repo = repo;
+    }
+
+    @SneakyThrows
     public void addGrade(int grade) {
-        if (grade < 2 || grade > 5) {
+        if (!repo.checkGrade(grade))
             throw new IllegalArgumentException(grade + " is wrong grade");
-        }
         grades.add(grade);
+    }
+
+    @SneakyThrows
+    public int raiting() {
+       return repo.getRaiting(
+               grades.stream()
+                       .mapToInt(x-> (int) x)
+                       .sum()
+       );
     }
 }
